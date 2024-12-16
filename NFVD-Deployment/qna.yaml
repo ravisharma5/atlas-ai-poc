@@ -99,7 +99,7 @@ seed_examples:
 document_outline: |
   We are trying to train the model to understand errors produced by execution of the application deployment templates by NFVD via ATLAS system.
 document:
-  repo: "https://github.com/ravisharma5/network_transmission_efficiency.git"
-  commit: 76c0adf140a4c366e47271f1c6cd1abdd31d846c
+  repo: "https://github.com/ravisharma5/atlas-ai-poc.git"
+  commit: f262c0e01a13a1f5385c65c97a30cb8e92f72c6d
   patterns:
     - data.md
