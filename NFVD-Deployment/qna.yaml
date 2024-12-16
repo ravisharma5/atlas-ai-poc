@@ -1,0 +1,105 @@
+---
+version: 3
+domain: cnf-nfvd-deployment
+created_by: Ravi Sharma
+seed_examples:
+  - context: |
+      This Ansible template is to deploy CNF(Cloud Native Functions) through HPE Network Function Virtualization(NFV) Director(NFVD). NFVD is the platform that allows us to run Helm deployment of applications for specific virtual functions.
+    questions_and_answers:
+      - question: |
+          What is the Ansbile template trying to do?
+        answer: |
+          Collect artifact (input parameter for NFVD, CV (custom specific value and more) from Market Place (A toll used to store application packages, application image and artifacts).
+          Using the above inputs it perform API call to NFVD and trigger a deployment of the specific CNF (Containerized Network Function).
+      - question: |
+          What components are involved in this template?
+        answer: |
+          NFVD: The tool that actuall does the helm install on the custer create a grafical view of the instance with its status, version and more.
+          ATLAS: This is the ansible automation tool. It is UI based where a user can trigger the workflows and templates and follow the status of each task within the job.
+          market place: a tool where the application document, image are stored. In addition to that artifacts spesifc to the enviroment are stored.
+          Cluster: this is the k8s cluster where the actull application are deployed on.
+      - question: |
+          How is success or failure determined?
+        answer: |
+          When running the template on atlas there is output that contain a realtime output with status of each task. At the end of the execution we are able to see failed or success on ATLAS UI. In addition to that the output log on the UI will give more detail on reason for failure, success etc.
+  - context: |
+      One of the error we faced while running this template is "Error executing operation DEPLOY:: Topology ERROR: Check Topologies failed:Check Topologies failed:ERROR there are resources that are not in the successful state. As cleanup_on_topology_fail is set to true, proceeding to delete". We need to supperize the root cause of this error and classify these kinds of errors.
+    questions_and_answers:
+      - question: |
+          What is the reason actual issue reported with this error?
+        answer: |
+          Sometimes NFVD times out before the deployment is completed on the cluster. This cause NFVD to fail update the topology with the correct current status of the application on the cluster.
+      - question: |
+          Which component is generating this error?
+        answer: |
+          This error is sent from NFVD to ATLAS reporting Deployment was not fully sucessful.
+      - question: |
+          How would you recommend to resolve this error?
+        answer: |
+          Follow this steps:
+          Case 1:
+          check the status of the instance on cluster.
+          If instance on cluster good go to NFVD and retry the failed NFVD job.
+          This should update the topology, in this case you can ignor the error on ATLAS and consider the deployment successful.
+          Case 2:
+          If the status of the instance in failed status then go to NFVD and do the rollback on the failed job. Once completed on NFVD check everything is cleard on cluster.
+          Go to Market Place and find the input parameter file used. Increase the time out value and re-run the deployment.
+  - context: |
+      Another common error we face when working on this template <[Status Code: 500]  : Job 09177c13-d3db-4826-92d4-de3f849c8983 failed in NFVD with error - DEPLOY_CNF failed. Chart ausf-udm failed at 'install' step : [Error: INSTALLATION FAILED: failed pre-install: 1 error occurred:\n\t* job failed: BackoffLimitExceeded\n\n\n(HELMLISTRESPONSE = [HelmBean [name=ausf-udm, revision=1, updated=2024-12-02 12:47:31.86004404 -0500 EST, status=failed, chart=reg-helm-charts-2311.149.0, app_version=2311.149.0, namespace=rcnltxaavzwcudm-y-nk-udm-wscc2t1]])].>
+    questions_and_answers:
+      - question: |
+          What is the reason actual issue reported with this error?
+        answer: |
+          The resource that is requested by application on cluster exceeded what is available in the cluster.
+      - question: |
+          Which component is generating this error?
+        answer: |
+          Error is comming from NFVD to ATLAS but actuall error is first sent back from cluster to NFVD.
+      - question: |
+          How would you recommend to resolve this error?
+        answer: |
+          Follow this steps:
+          Find out the available quota in cluster.
+          Contact application owner or vendor to get minimum required resource quota and see if this is within the available quota above, in that case update the cutom value file with this value.
+          Go to NFVD and do a clean up by doing rollback of the failed job.
+          If the minimum resource is not within the available quota on cluster you will have to contact the platform team to the cluster and request increase acording to what is required by the application.
+          And retry the deployment.
+  - context: |
+      Another common error we facing  <no template found matching name>
+    questions_and_answers:
+      - question: |
+          What is the reason actual issue reported with this error?
+        answer: |
+          The job is making API call to the NFVD to deploy a specific Application with its template name which do not exist on NFVD.
+      - question: |
+          Which component is generating this error?
+        answer: |
+          Error is comming from NFVD to ATLAS. At this point nothing have happend.
+      - question: |
+          How would you recommend to resolve this error?
+        answer: |
+          Upload the application package to NFVD and assign it to the VNFG (VNF group is isolated area for selected site). Now you can re-run the job.
+  - context: |
+      another common error <failed in NFVD with error - Error invoking container-ms: code:400; msg:{\\"messages\\":[],\\"error\\":{\\"code\\":\\"ff.cnf.request.invalid.code\\",\\"message\\":\\"The request does not contain a list of the CNF charts.>
+    questions_and_answers:
+      - question: |
+          What is the reason actual issue reported with this error?
+        answer: |
+          The job is making API call to the NFVD to deploy a spesific Application with its template is found but the helm chart name is not been found.
+      - question: |
+          Which component is generating this error?
+        answer: |
+          Error is comming from NFVD to ATLAS. At this point nothing have happend.
+      - question: |
+          How would you recommend to resolve this error?
+        answer: |
+          Follow this steps:
+          Check the chart name you have defined in your input parameter file and see if same us what is shown on NFVD. On NFVD GUI you can click on the template that have started the deployment and check the name of the chart on the right side of the window.
+          If name is different then you will need to update your input parameter file on Market place, rollback the failed job on NFVD and do re-deploy.
+document_outline: |
+  We are trying to train the model to understand errors produced by execution of the application deployment templates by NFVD via ATLAS system.
+document:
+  repo: "https://github.com/ravisharma5/network_transmission_efficiency.git"
+  commit: 76c0adf140a4c366e47271f1c6cd1abdd31d846c
+  patterns:
+    - data.md
