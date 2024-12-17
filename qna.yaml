@@ -102,7 +102,7 @@ seed_examples:
 document_outline: |
   This document is describing one of the ATLAS Ansible Template for a CNF deployment.
 document:
-  repo: "https://github.com/ravisharma5/network_transmission_efficiency.git"
-  commit: 76c0adf140a4c366e47271f1c6cd1abdd31d846c
+  repo: "https://github.com/ravisharma5/atlas-ai-poc.git"
+  commit: a32dc417a683ab1b1a07a61aef38e2e47faf5bf3
   patterns:
     - data.md
