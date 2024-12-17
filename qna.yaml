@@ -103,6 +103,6 @@ document_outline: |
   This document is describing one of the ATLAS Ansible Template for a CNF deployment.
 document:
   repo: "https://github.com/ravisharma5/atlas-ai-poc.git"
-  commit: a32dc417a683ab1b1a07a61aef38e2e47faf5bf3
+  commit: dad470d3605d9cb40facb3b824dbc91789144949
   patterns:
     - data.md
